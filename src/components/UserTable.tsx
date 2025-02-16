@@ -14,19 +14,19 @@ const UserTable: React.FC<UserTableProps> = observer(({ store }) => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      sorter: true,
+      sorter: (a: User, b: User) => a.name.localeCompare(b.name),
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      sorter: true,
+      sorter: (a: User, b: User) => a.email.localeCompare(b.email),
     },
     {
       title: 'Registration Date',
       dataIndex: 'registrationDate',
       key: 'registrationDate',
-      sorter: true,
+      sorter: (a: User, b: User) => new Date(a.registrationDate).getTime() - new Date(b.registrationDate).getTime(),
       render: (date: string) => new Date(date).toLocaleDateString(),
     },
     {
@@ -34,7 +34,7 @@ const UserTable: React.FC<UserTableProps> = observer(({ store }) => {
       dataIndex: 'status',
       key: 'status',
       render: (status: string) => (
-        <Tag style={{width: '30%', textAlign: 'center'}} color={status === 'active' ? 'green' : 'volcano'}>{status}</Tag>
+        <Tag style={{width: '100px', textAlign: 'center'}} color={status === 'active' ? 'green' : 'volcano'}>{status}</Tag>
       ),
     },
   ];
@@ -56,11 +56,6 @@ const UserTable: React.FC<UserTableProps> = observer(({ store }) => {
       columns={columns}
       pagination={{position: ['bottomCenter']}}
       loading={store.isLoading}
-      onChange={(_, __, sorter) => {
-        if (Array.isArray(sorter)) return;
-        const { field, order } = sorter;
-        store.setSort(field as keyof User, order as 'bottom' | 'up' | null);
-      }}
       onRow={(record) => ({
         onClick: () => store.setSelectedUser(record),
       })}

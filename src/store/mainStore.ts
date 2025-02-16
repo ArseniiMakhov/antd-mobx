@@ -8,9 +8,6 @@ class MainStore {
   filteredUsers: User[] = [];
   isLoading = false;
   error = '';
-  filterStatus: 'all' | 'active' | 'inactive' = 'all';
-  sortKey: keyof User | null = null;
-  sortOrder: 'bottom' | 'up' | null = null;
   selectedUser: User | null = null;
   constructor() {
     makeAutoObservable(this);
@@ -24,12 +21,12 @@ class MainStore {
       const fakeUsers = Array.from({ length: 50 }, () => this.createFakeUser());
       runInAction(() => {
         this.users = fakeUsers;
-        this.filteredUsers = this.applyFiltersAndSorting(fakeUsers);
+        this.filterUsers(fakeUsers);
       });
     } catch {
-        runInAction(() => {
-            this.error = 'Failed to fetch users';
-        });
+      runInAction(() => {
+        this.error = 'Failed to fetch users';
+      });
     } finally {
       runInAction(() => {
         this.isLoading = false;
@@ -50,30 +47,12 @@ class MainStore {
     };
   }
 
-  applyFiltersAndSorting(users: User[]): User[] {
+  filterUsers(users: User[], status: 'all' | 'active' | 'inactive' = 'all') {
     let filteredUsers = users;
-    if (this.filterStatus !== 'all') {
-      filteredUsers = users.filter(user => user.status === this.filterStatus);
+    if (status !== 'all') {
+      filteredUsers = users.filter(user => user.status === status);
     }
-    if (this.sortKey && this.sortOrder) {
-      filteredUsers = filteredUsers.sort((a, b) => {
-        if (a[this.sortKey!] < b[this.sortKey!]) return this.sortOrder === 'bottom' ? -1 : 1;
-        if (a[this.sortKey!] > b[this.sortKey!]) return this.sortOrder === 'bottom' ? 1 : -1;
-        return 0;
-      });
-    }
-    return filteredUsers;
-  }
-
-  setFilterStatus(status: 'all' | 'active' | 'inactive') {
-    this.filterStatus = status;
-    this.filteredUsers = this.applyFiltersAndSorting(this.users);
-  }
-
-  setSort(key: keyof User, order: 'bottom' | 'up' | null) {
-    this.sortKey = key;
-    this.sortOrder = order;
-    this.filteredUsers = this.applyFiltersAndSorting(this.users);
+    this.filteredUsers = filteredUsers;
   }
 
   setSelectedUser(user: User | null) {

@@ -21,7 +21,7 @@ const App: React.FC = observer(() => {
         <Select
           defaultValue="all"
           style={{ width: 120 }}
-          onChange={(value) => userStore.setFilterStatus(value as 'all' | 'active' | 'inactive')}
+          onChange={(value) => userStore.filterUsers(userStore.users, value as 'all' | 'active' | 'inactive')}
         >
           <Option value="all">All</Option>
           <Option value="active">Active</Option>
